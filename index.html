@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Habits & Journal Tracker</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>🎯 My Habits & Journal</h1>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('habits')">📋 Habits</button>
+            <button class="tab-btn" onclick="showTab('journal')">📝 Journal</button>
+            <button class="tab-btn" onclick="showTab('stats')">📊 Statistics</button>
+        </div>
+
+        <!-- HABITS TAB -->
+        <div id="habitsTab" class="tab-content active">
+            <div class="section-header">
+                <h2>My Habits</h2>
+                <button class="btn btn-primary" onclick="openHabitModal()">+ Add Habit</button>
+            </div>
+
+            <div id="habitsContainer" class="habits-grid"></div>
+
+            <div id="habitsEmpty" class="empty-state">
+                <div class="empty-icon">📋</div>
+                <h3>No habits yet</h3>
+                <p>Start building better habits today!</p>
+                <button class="btn btn-primary" onclick="openHabitModal()">Create Your First Habit</button>
+            </div>
+        </div>
+
+        <!-- JOURNAL TAB -->
+        <div id="journalTab" class="tab-content">
+            <div class="section-header">
+                <h2>My Journal</h2>
+                <button class="btn btn-primary" onclick="openJournalModal()">+ New Entry</button>
+            </div>
+
+            <div id="journalContainer" class="journal-grid"></div>
+
+            <div id="journalEmpty" class="empty-state">
+                <div class="empty-icon">📝</div>
+                <h3>No journal entries yet</h3>
+                <p>Start documenting your journey!</p>
+                <button class="btn btn-primary" onclick="openJournalModal()">Write Your First Entry</button>
+            </div>
+        </div>
+
+        <!-- STATISTICS TAB -->
+        <div id="statsTab" class="tab-content">
+            <h2>Progress Statistics</h2>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalHabits">0</div>
+                    <div class="stat-label">Total Habits</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completedToday">0</div>
+                    <div class="stat-label">Completed Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalEntries">0</div>
+                    <div class="stat-label">Journal Entries</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="overallSuccess">0%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Weekly Progress</h3>
+                <canvas id="progressChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- HABIT MODAL -->
+    <div id="habitModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="habitModalTitle">Create New Habit</h2>
+                <button class="close-btn" onclick="closeHabitModal()">&times;</button>
+            </div>
+
+            <form id="habitForm">
+                <div class="form-group">
+                    <label>Habit Name *</label>
+                    <input type="text" id="habitName" placeholder="e.g., Morning Exercise" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="habitDescription" placeholder="e.g., 30 minutes workout" />
+                </div>
+
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="color-picker" id="colorPicker">
+                        <div class="color-option selected" style="background: #667eea" data-color="#667eea"></div>
+                        <div class="color-option" style="background: #48bb78" data-color="#48bb78"></div>
+                        <div class="color-option" style="background: #f56565" data-color="#f56565"></div>
+                        <div class="color-option" style="background: #ed8936" data-color="#ed8936"></div>
+                        <div class="color-option" style="background: #9f7aea" data-color="#9f7aea"></div>
+                        <div class="color-option" style="background: #38b2ac" data-color="#38b2ac"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Icon (Optional)</label>
+                    <input type="text" id="habitIcon" placeholder="e.g., 💪 🏃 📚 🧘" />
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">Save Habit</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeHabitModal()">Cancel</button>
+                    <button type="button" id="deleteHabitBtn" class="btn btn-danger" style="display:none;" onclick="deleteHabit()">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JOURNAL MODAL -->
+    <div id="journalModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="journalModalTitle">New Journal Entry</h2>
+                <button class="close-btn" onclick="closeJournalModal()">&times;</button>
+            </div>
+
+            <form id="journalForm">
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" id="journalDate" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="journalTitle" placeholder="Today's reflection..." />
+                </div>
+
+                <div class="form-group">
+                    <label>How are you feeling?</label>
+                    <div class="mood-picker">
+                        <button type="button" class="mood-btn" data-mood="great" onclick="selectMood('great')">😊 Great</button>
+                        <button type="button" class="mood-btn" data-mood="good" onclick="selectMood('good')">🙂 Good</button>
+                        <button type="button" class="mood-btn" data-mood="okay" onclick="selectMood('okay')">😐 Okay</button>
+                        <button type="button" class="mood-btn" data-mood="bad" onclick="selectMood('bad')">😔 Bad</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Entry *</label>
+                    <textarea id="journalEntry" rows="8" placeholder="Write your thoughts here..." required></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">Save Entry</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeJournalModal()">Cancel</button>
+                    <button type="button" id="deleteJournalBtn" class="btn btn-danger" style="display:none;" onclick="deleteJournalEntry()">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
